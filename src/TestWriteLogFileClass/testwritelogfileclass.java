@@ -32,6 +32,32 @@ public class testwritelogfileclass {
     public static final String formatDateTimeFull = "dd/MM/yyyy HH:mm:ss";
     public static final String formatDateTimeFullAll = "E dd/MM/yyyy HH:mm:ss";
     
+    public void WriteErrorToFileByDateTimeV2(String sPrmErrTitle, String sPrmErrDesc) {
+        String sFileDate = getSystemDate(formatDate);
+        String sFileName = sFileDate + ".log";
+        String sPathFile = "";
+        String sErrorDisplay = "";
+
+        try {
+            Path basePath = Paths.get(".").toAbsolutePath().normalize();
+            sPathFile = basePath.resolve("Error").resolve(sPrmErrTitle).resolve(sFileName).toString();
+
+            Path parentDir = Paths.get(sPathFile).getParent();
+            if (!Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+                Files.createFile(parentDir.resolve(sFileName));
+            }
+
+            try (PrintWriter pWriter = new PrintWriter(new BufferedWriter(new FileWriter(sPathFile, true)))) {
+                pWriter.println(getSystemDate(formatDateTimeFull) + ": ");
+                pWriter.println(sPrmErrDesc);
+            }
+        } catch (IOException ex) {
+            sErrorDisplay = DisplayLogMessage(ex);
+            Logger.getLogger(testwritelogfileclass.class.getName()).log(Level.SEVERE, null, sErrorDisplay);
+        }
+    }    
+    
     public void WriteErrorToFileByDateTime(String sPrmErrTitle, String sPrmErrDesc){
         String sFileDate, sErrDateTime, sFileName;
         String sPathFile = "";
