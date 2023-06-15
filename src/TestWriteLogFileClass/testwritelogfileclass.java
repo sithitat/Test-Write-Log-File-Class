@@ -12,8 +12,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -206,14 +210,40 @@ public class testwritelogfileclass {
         }
     }
     
-    private String getSystemDate(String format) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        LocalDateTime now = LocalDateTime.now();
-        return now.format(formatter);
-    }
+    public String getSystemDate(String format) {
+        try{
+            DateFormat dateFormat = new SimpleDateFormat(format,Locale.US);
+            Date date = new Date();
+            return dateFormat.format(date);
+        }
+        catch (Exception e){
+            return null;
+        }
+    }    
     
-    private String DisplayLogMessage(Exception ex) {
-        // Implement your logic to handle the exception and display an appropriate error message.
-        return ex.getMessage();
-    }
+    public String DisplayLogMessage(Exception PrmEx){
+        String sReturnMessage;
+        String sErrDateTime;
+        String sErrString;
+        String sErrFull;
+        String sErrLine;
+        
+        StackTraceElement[] stackTrace = PrmEx.getStackTrace();
+        sErrDateTime = getSystemDate(formatDateTimeFull);
+
+        sErrString = PrmEx.getMessage();
+        // sErrFull = PrmEx.getStackTrace()[0].getMethodName();
+        sErrFull = stackTrace[0].getMethodName();
+        // sErrLine = String.valueOf(PrmEx.getStackTrace()[1].getLineNumber());
+        sErrLine = String.valueOf(stackTrace[1].getLineNumber());
+        
+        sErrString = sErrString + "[" + sErrFull + " - at Line No." + sErrLine + "]";
+        // sErrFull = sErrDateTime + ":" + PrmEx.getStackTrace()[1].getFileName() + " --> " + PrmEx.getStackTrace()[1].getClassName() + " --> " + PrmEx.getStackTrace()[1].getMethodName();
+        sErrFull = sErrDateTime + ":" + stackTrace[1].getFileName() + " --> " + stackTrace[1].getClassName() + " --> " + stackTrace[1].getMethodName();
+        sErrString = sErrFull + " --> " + sErrString;
+        
+        sReturnMessage = sErrString;
+        
+        return sReturnMessage;
+    }    
 }
